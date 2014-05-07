@@ -53,6 +53,8 @@ static char * urlsort(char *in) {
 
   char *token, *sorted_params, *tmp;
   sorted_params = (char*) malloc(strlen(in));
+  # on our servers, malloc sometimes returns NULL, just return the string, if that happens to prevent segfaults
+  if (sorted_params == NULL) return in;
   
   params[0] = '\0';
   
