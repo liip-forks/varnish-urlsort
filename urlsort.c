@@ -15,7 +15,7 @@ static void insert(Node **tree, Node *item) {
     *tree = item;
     return;
   }
-  if(strcmp(item->value, (*tree)->value) > 0) 
+  if(strcmp(item->value, (*tree)->value) > 0)
     insert(&(*tree)->left, item);
   else if(strcmp((*tree)->value, item->value) > 0)
     insert(&(*tree)->right, item);
@@ -44,6 +44,9 @@ static char * urlsort(char *in) {
 
   char *url, *params;
   url = strdup(in);
+  # on our servers, malloc sometimes returns NULL, just return the string, if that happens to prevent segfaults
+  if (url == NULL) return in;
+
   params = strchr(url, '?');
   if(params == NULL) {
     free(url);
@@ -55,9 +58,9 @@ static char * urlsort(char *in) {
   sorted_params = (char*) malloc(strlen(in));
   # on our servers, malloc sometimes returns NULL, just return the string, if that happens to prevent segfaults
   if (sorted_params == NULL) return in;
-  
+
   params[0] = '\0';
-  
+
   for(token = strtok_r(++params, "&", &tmp); token; token = strtok_r(NULL , "&", &tmp)) {
       current = (Node* )malloc(sizeof(Node));
       current->left = current->right = NULL;
@@ -65,12 +68,12 @@ static char * urlsort(char *in) {
       current->value = token;
       insert(&root, current);
   }
-  
+
   if(root == NULL) return in;
   sorted_params[0] = 0;
   sortparam(root, sorted_params);
   strcat(url, "?");
-  sorted_params[strlen(sorted_params) - 1] = 0; 
+  sorted_params[strlen(sorted_params) - 1] = 0;
   strcat(url, sorted_params);
   free(token);
   free(sorted_params);
